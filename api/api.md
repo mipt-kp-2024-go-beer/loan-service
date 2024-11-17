@@ -38,3 +38,4 @@
 - Reservations list (requires permission): takes time, returns list of books taken at that point.
 - Overdue list (requires permission): takes time margin, returns list of overdue books.
 - Some statistics?
+- Clean up database?
