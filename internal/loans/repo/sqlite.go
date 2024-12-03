@@ -13,22 +13,26 @@ func NewSqliteRepo() loans.Repo {
 type sqliteRepo struct {
 }
 
-func (m *sqliteRepo) LookupBook(bookID string) (loans.LentBook, error) {
-	return loans.LentBook{}, nil
-}
-
-func (m *sqliteRepo) UpdateBook(book loans.LentBook) error {
-	return nil
-}
-
-func (m *sqliteRepo) InsertBook(book loans.LentBook) error {
-	return nil
-}
-
-func (m *sqliteRepo) FindLentBooks(at time.Time) ([]loans.LentBook, error) {
+func (s *sqliteRepo) FindLentBooks(at time.Time) ([]loans.LentBook, error) {
 	return nil, nil
 }
 
-func (m *sqliteRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
+func (s *sqliteRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
+	return nil, nil
+}
+
+func (s *sqliteRepo) TakeBook(book loans.LentBook, totalStock uint) error {
+	return nil
+}
+
+func (s *sqliteRepo) ReturnBook(book loans.LentBook) error {
+	return nil
+}
+
+func (s *sqliteRepo) FindLoansOf(userID string, bookID string) ([]loans.LentBook, error) {
+	return nil, nil
+}
+
+func (s *sqliteRepo) FindLoansOfBook(bookID string) ([]loans.LentBook, error) {
 	return nil, nil
 }

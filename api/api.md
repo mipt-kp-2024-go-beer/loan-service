@@ -32,8 +32,8 @@
 ...
 
 ## Public API (may require auth)
-- Book take (requires permission): takes book id, returns success.
-- Book return (requires permission): takes book id.
+- Book take (requires permission): takes book id (and optional user id if not for self).
+- Book return (requires permission): takes book id (and optional user id if not for self).
 - Book available (requires permission): takes book id, returns count left.
 - Reservations list (requires permission): takes time, returns list of books taken at that point.
 - Overdue list (requires permission): takes time margin, returns list of overdue books.

@@ -49,3 +49,8 @@ type Connection interface {
 	// VerifyToken cheks the authentication token and returns the information about the associated user if it is valid
 	VerifyToken(authToken string) (User, error)
 }
+
+// HasPerm returns true if the user has the given permission
+func (u User) HasPerm(p Permission) bool {
+	return u.Permissions&p != 0
+}
