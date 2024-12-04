@@ -7,8 +7,9 @@ import (
 )
 
 type Handler struct {
-	router  *chi.Mux
-	service Service
+	router         *chi.Mux
+	routerInternal *chi.Mux
+	service        Service
 }
 
 func NewHandler(service Service) Handler {
@@ -26,6 +27,10 @@ func (h *Handler) Register() {
 
 		r.Get("/api/v1/reserved", h.getReserved)
 		r.Get("/api/v1/overdue", h.getOverdue)
+	})
+
+	h.routerInternal.Group(func(r chi.Router) {
+		r.Get("/api/v1/userloans/{userID}", h.getUserLoans)
 	})
 }
 
@@ -46,5 +51,9 @@ func (h *Handler) getReserved(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getOverdue(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+func (h *Handler) getUserLoans(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
