@@ -17,10 +17,11 @@ type Handler struct {
 	service        Service
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(router *chi.Mux, routerInternal *chi.Mux, service Service) Handler {
 	return Handler{
-		router:  chi.NewRouter(),
-		service: service,
+		router:         router,
+		routerInternal: routerInternal,
+		service:        service,
 	}
 }
 

@@ -4,12 +4,16 @@ import "time"
 
 // Config stores the configuration of the microservice
 type Config struct {
-	// Host is the host the server listens on
-	Host string
-	// Port is the port the server listens on
-	Port uint16
+	// PublicURL is the host:port the public API server listens on
+	PublicURL string `json:"public_url"`
+	// PrivateURL is the host:port the private API server listens on
+	PrivateURL string `json:"private_url"`
+	// BookServiceURL is the host:port of the book microservice
+	BookServiceURL string `json:"book_service_url"`
+	// UserServiceURL is the host:port of the users microservice
+	UserServiceURL string `json:"user_service_url"`
 	// DSN is the database connection string
-	DSN string
+	DSN string `json:"dsn"`
 	// BookReturnDeadline is the time span that a user has to return a book after it has been taken
-	BookReturnDeadline time.Duration
+	BookReturnDeadline time.Duration `json:"book_return_deadline"`
 }

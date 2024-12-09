@@ -1,0 +1,8 @@
+{
+    "public_url": ":8080",
+    "private_url": ":8081",
+    "book_service_url": "localhost:8082",
+    "user_service_url": "localhost:8083",
+    "dsn": "memory://",
+    "book_return_deadline": "14d"
+}

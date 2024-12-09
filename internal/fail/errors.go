@@ -12,6 +12,7 @@ var (
 	ErrForbidden     = new("insufficient permissions")
 	ErrNoStock       = new("insufficient stock")
 	ErrMissingParams = new("missing required parameters")
+	ErrInvalidDSN    = new("unrecognized data source name")
 )
 
 func new(desc string) error {
