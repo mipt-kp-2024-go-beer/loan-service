@@ -136,12 +136,63 @@ func (s *sqliteRepo) TakeBook(book loans.LentBook, totalStock uint) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	var lentStock uint
+	err = tx.QueryRow(
+		"SELECT count(*) FROM books WHERE id = ?",
+		book.BookID,
+	).Scan(&lentStock)
+	if err != nil {
+		return err
+	}
+
+	if lentStock >= totalStock {
+		return fail.ErrNoStock
+	}
+
+	result, err := tx.Exec(
+		"INSERT INTO lent_books (id, user_id, book_id, taken_at, return_deadline, returned, returned_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		book.ID, book.UserID, book.BookID, book.TakenAt, book.ReturnDeadline, false, 0,
+	)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return fail.ErrCollision
+	}
+
+	tx.Commit()
+
 	return nil
 }
 
 func (s *sqliteRepo) ReturnBook(book loans.LentBook) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
+
+	result, err := s.db.Exec(
+		"UPDATE lent_books SET returned = TRUE, returned_at = ? WHERE id = ? AND returned = FALSE",
+		book.ReturnedAt, book.ID,
+	)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return fail.ErrCollision
+	}
 
 	return nil
 }
