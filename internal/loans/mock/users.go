@@ -8,14 +8,14 @@ import (
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/users"
 )
 
-func NewConn(url string) users.Connection {
-	return &implConn{}
+func NewUsersConn(url string) users.Connection {
+	return &implUsersConn{}
 }
 
-type implConn struct {
+type implUsersConn struct {
 }
 
-func (*implConn) VerifyToken(ctx context.Context, authToken string) (*users.User, error) {
+func (*implUsersConn) VerifyToken(ctx context.Context, authToken string) (*users.User, error) {
 	switch {
 	case authToken == "invalid":
 		return nil, fmt.Errorf("%w: pretend invalid token", fail.ErrUserService)
