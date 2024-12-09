@@ -1,7 +1,6 @@
 package fail
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 )
@@ -14,6 +13,8 @@ var (
 	ErrMissingParams    = new("missing required parameters")
 	ErrInvalidDSN       = new("unrecognized data source name")
 	ErrMalformedStorage = new("malformed storage")
+	ErrUserService      = new("user service error")
+	ErrBookService      = new("book service error")
 )
 
 func new(desc string) error {
@@ -36,12 +37,7 @@ func HTTPErrorCode(err error) int {
 	}
 }
 
-// WriteJSONError writes the right error code and a JSON error message to the given writer.
-func WriteJSONError(w http.ResponseWriter, err error) {
-	w.WriteHeader(HTTPErrorCode(err))
-	_ = json.NewEncoder(w).Encode(struct {
-		Error string `json:"error"`
-	}{
-		Error: err.Error(),
-	})
+// WriteError writes the right error code and the error message to the given writer.
+func WriteError(w http.ResponseWriter, err error) {
+	http.Error(w, err.Error(), HTTPErrorCode(err))
 }

@@ -50,20 +50,20 @@ func writeJSONSuccess(w http.ResponseWriter) {
 func (h *Handler) postBookTake(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
 		return
 	}
 	authToken := r.Form.Get("auth")
 	userID := r.Form.Get("user")
 	bookID := chi.URLParam(r, "bookID")
 	if authToken == "" || bookID == "" {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth, bookID"))
+		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth, bookID"))
 		return
 	}
 
 	err = h.service.TakeBook(authToken, userID, bookID)
 	if err != nil {
-		fail.WriteJSONError(w, err)
+		fail.WriteError(w, err)
 		return
 	}
 
@@ -73,20 +73,20 @@ func (h *Handler) postBookTake(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) postBookReturn(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
 		return
 	}
 	authToken := r.Form.Get("auth")
 	userID := r.Form.Get("user")
 	bookID := chi.URLParam(r, "bookID")
 	if authToken == "" || bookID == "" {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth, bookID"))
+		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth, bookID"))
 		return
 	}
 
 	err = h.service.ReturnBook(authToken, userID, bookID)
 	if err != nil {
-		fail.WriteJSONError(w, err)
+		fail.WriteError(w, err)
 		return
 	}
 
@@ -96,19 +96,19 @@ func (h *Handler) postBookReturn(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getBookAvailable(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
 		return
 	}
 	authToken := r.Form.Get("auth")
 	bookID := chi.URLParam(r, "bookID")
 	if authToken == "" || bookID == "" {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth, bookID"))
+		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth, bookID"))
 		return
 	}
 
 	available, err := h.service.CountAvailableBook(authToken, bookID)
 	if err != nil {
-		fail.WriteJSONError(w, err)
+		fail.WriteError(w, err)
 		return
 	}
 
@@ -123,23 +123,23 @@ func (h *Handler) getBookAvailable(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getReserved(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
 		return
 	}
 	authToken := r.Form.Get("auth")
 	atTime, err := strconv.ParseInt(r.Form.Get("atTime"), 10, 64)
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
 		return
 	}
 	if authToken == "" {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth"))
+		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth"))
 		return
 	}
 
 	reserved, err := h.service.ListReservations(authToken, time.Unix(atTime, 0))
 	if err != nil {
-		fail.WriteJSONError(w, err)
+		fail.WriteError(w, err)
 		return
 	}
 
@@ -154,23 +154,23 @@ func (h *Handler) getReserved(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getOverdue(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: %w", fail.ErrMissingParams, err))
 		return
 	}
 	authToken := r.Form.Get("auth")
 	atTime, err := strconv.ParseInt(r.Form.Get("atTime"), 10, 64)
 	if err != nil {
-		fail.WriteJSONError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
+		fail.WriteError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
 		return
 	}
 	if authToken == "" {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth"))
+		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth"))
 		return
 	}
 
 	overdue, err := h.service.ListOverdue(authToken, time.Unix(atTime, 0))
 	if err != nil {
-		fail.WriteJSONError(w, err)
+		fail.WriteError(w, err)
 		return
 	}
 
@@ -187,13 +187,13 @@ func (h *Handler) getOverdue(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getUserLoans(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "userID")
 	if userID == "" {
-		fail.WriteJSONError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "userID"))
+		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "userID"))
 		return
 	}
 
 	unreturned, err := h.service.GetUserLoans(userID)
 	if err != nil {
-		fail.WriteJSONError(w, err)
+		fail.WriteError(w, err)
 		return
 	}
 

@@ -56,8 +56,8 @@ func makeServer(address string) (*chi.Mux, *http.Server) {
 
 // Setup configures the application
 func (a *App) Setup(ctx context.Context) error {
-	userSvc := users.New(a.config.UserServiceURL)
-	bookSvc := books.New(a.config.BookServiceURL)
+	userSvc := users.NewConn(a.config.UserServiceURL)
+	bookSvc := books.NewConn(a.config.BookServiceURL)
 
 	dsn := a.config.DSN
 	var store loans.Repo
