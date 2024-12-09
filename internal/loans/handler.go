@@ -61,7 +61,7 @@ func (h *Handler) postBookTake(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.TakeBook(authToken, userID, bookID)
+	err = h.service.TakeBook(r.Context(), authToken, userID, bookID)
 	if err != nil {
 		fail.WriteError(w, err)
 		return
@@ -84,7 +84,7 @@ func (h *Handler) postBookReturn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.ReturnBook(authToken, userID, bookID)
+	err = h.service.ReturnBook(r.Context(), authToken, userID, bookID)
 	if err != nil {
 		fail.WriteError(w, err)
 		return
@@ -106,7 +106,7 @@ func (h *Handler) getBookAvailable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	available, err := h.service.CountAvailableBook(authToken, bookID)
+	available, err := h.service.CountAvailableBook(r.Context(), authToken, bookID)
 	if err != nil {
 		fail.WriteError(w, err)
 		return
@@ -137,7 +137,7 @@ func (h *Handler) getReserved(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reserved, err := h.service.ListReservations(authToken, time.Unix(atTime, 0))
+	reserved, err := h.service.ListReservations(r.Context(), authToken, time.Unix(atTime, 0))
 	if err != nil {
 		fail.WriteError(w, err)
 		return
@@ -168,7 +168,7 @@ func (h *Handler) getOverdue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	overdue, err := h.service.ListOverdue(authToken, time.Unix(atTime, 0))
+	overdue, err := h.service.ListOverdue(r.Context(), authToken, time.Unix(atTime, 0))
 	if err != nil {
 		fail.WriteError(w, err)
 		return
@@ -191,7 +191,7 @@ func (h *Handler) getUserLoans(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	unreturned, err := h.service.GetUserLoans(userID)
+	unreturned, err := h.service.GetUserLoans(r.Context(), userID)
 	if err != nil {
 		fail.WriteError(w, err)
 		return

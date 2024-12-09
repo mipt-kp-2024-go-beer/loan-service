@@ -1,5 +1,7 @@
 package users
 
+import "context"
+
 // User stores the information about a user
 type User struct {
 	// ID is the unique identifier of the user
@@ -47,7 +49,7 @@ const (
 // Connection is the interface for the private API of the users microservice
 type Connection interface {
 	// VerifyToken cheks the authentication token and returns the information about the associated user if it is valid
-	VerifyToken(authToken string) (*User, error)
+	VerifyToken(ctx context.Context, authToken string) (*User, error)
 }
 
 // HasPerm returns true if the user has the given permission

@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -24,12 +25,12 @@ type memoryRepo struct {
 // for use in unit testing
 type TestMemoryRepo interface {
 	loans.Repo
-	LookupBook(ID string) (loans.LentBook, error)
-	UpdateBook(book loans.LentBook) error
-	InsertBook(book loans.LentBook) error
+	LookupBook(ctx context.Context, ID string) (loans.LentBook, error)
+	UpdateBook(ctx context.Context, book loans.LentBook) error
+	InsertBook(ctx context.Context, book loans.LentBook) error
 }
 
-func (m *memoryRepo) LookupBook(ID string) (loans.LentBook, error) {
+func (m *memoryRepo) LookupBook(ctx context.Context, ID string) (loans.LentBook, error) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -40,7 +41,7 @@ func (m *memoryRepo) LookupBook(ID string) (loans.LentBook, error) {
 	return book, nil
 }
 
-func (m *memoryRepo) UpdateBook(book loans.LentBook) error {
+func (m *memoryRepo) UpdateBook(ctx context.Context, book loans.LentBook) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -51,7 +52,7 @@ func (m *memoryRepo) UpdateBook(book loans.LentBook) error {
 	return nil
 }
 
-func (m *memoryRepo) InsertBook(book loans.LentBook) error {
+func (m *memoryRepo) InsertBook(ctx context.Context, book loans.LentBook) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -62,7 +63,7 @@ func (m *memoryRepo) InsertBook(book loans.LentBook) error {
 	return nil
 }
 
-func (m *memoryRepo) FindLentBooks(at time.Time) ([]loans.LentBook, error) {
+func (m *memoryRepo) FindLentBooks(ctx context.Context, at time.Time) ([]loans.LentBook, error) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -76,7 +77,7 @@ func (m *memoryRepo) FindLentBooks(at time.Time) ([]loans.LentBook, error) {
 	return result, nil
 }
 
-func (m *memoryRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
+func (m *memoryRepo) FindOverdueBooks(ctx context.Context, at time.Time) ([]loans.LentBook, error) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -90,7 +91,7 @@ func (m *memoryRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
 	return result, nil
 }
 
-func (m *memoryRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
+func (m *memoryRepo) TakeBook(ctx context.Context, book *loans.LentBook, totalStock uint) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -115,7 +116,7 @@ func (m *memoryRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
 	return nil
 }
 
-func (m *memoryRepo) ReturnBook(book *loans.LentBook) error {
+func (m *memoryRepo) ReturnBook(ctx context.Context, book *loans.LentBook) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -138,7 +139,7 @@ func (m *memoryRepo) ReturnBook(book *loans.LentBook) error {
 	return nil
 }
 
-func (m *memoryRepo) FindLoansOf(userID string, bookID string) ([]loans.LentBook, error) {
+func (m *memoryRepo) FindLoansOf(ctx context.Context, userID string, bookID string) ([]loans.LentBook, error) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 

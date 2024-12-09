@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"database/sql"
 	"strings"
 	"sync"
@@ -83,7 +84,7 @@ func convertRowsToReal(rows *sql.Rows) ([]loans.LentBook, error) {
 		result = append(result, realLentBook)
 	}
 
-	return result, nil
+	return result, rows.Err()
 }
 
 func convertRealToSqlite(realLentBook loans.LentBook) sqliteLentBook {
@@ -98,11 +99,13 @@ func convertRealToSqlite(realLentBook loans.LentBook) sqliteLentBook {
 	}
 }
 
-func (s *sqliteRepo) FindLentBooks(at time.Time) ([]loans.LentBook, error) {
+func (s *sqliteRepo) FindLentBooks(ctx context.Context, at time.Time) ([]loans.LentBook, error) {
+	// TODO: Here and elsewhere, should I somehow respect context during mutex acquisition?
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	rows, err := s.db.Query(
+	rows, err := s.db.QueryContext(
+		ctx,
 		"SELECT * FROM lent_books WHERE taken_at <= ? AND NOT (returned AND returned_at <= ?)",
 		at.Unix(), at.Unix(),
 	)
@@ -115,11 +118,12 @@ func (s *sqliteRepo) FindLentBooks(at time.Time) ([]loans.LentBook, error) {
 	return result, err
 }
 
-func (s *sqliteRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
+func (s *sqliteRepo) FindOverdueBooks(ctx context.Context, at time.Time) ([]loans.LentBook, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	rows, err := s.db.Query(
+	rows, err := s.db.QueryContext(
+		ctx,
 		"SELECT * FROM lent_books WHERE return_deadline <= ? AND NOT (returned AND returned_at <= ?)",
 		at.Unix(), at.Unix(),
 	)
@@ -132,18 +136,19 @@ func (s *sqliteRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
 	return result, err
 }
 
-func (s *sqliteRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
+func (s *sqliteRepo) TakeBook(ctx context.Context, book *loans.LentBook, totalStock uint) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	tx, err := s.db.Begin()
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
 	var lentStock uint
-	err = tx.QueryRow(
+	err = tx.QueryRowContext(
+		ctx,
 		"SELECT count(*) FROM books WHERE id = ?",
 		book.BookID,
 	).Scan(&lentStock)
@@ -155,7 +160,8 @@ func (s *sqliteRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
 		return fail.ErrNoStock
 	}
 
-	result, err := tx.Exec(
+	result, err := tx.ExecContext(
+		ctx,
 		"INSERT INTO lent_books (id, user_id, book_id, taken_at, return_deadline, returned, returned_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		book.ID, book.UserID, book.BookID, book.TakenAt, book.ReturnDeadline, false, 0,
 	)
@@ -175,11 +181,12 @@ func (s *sqliteRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
 	return nil
 }
 
-func (s *sqliteRepo) ReturnBook(book *loans.LentBook) error {
+func (s *sqliteRepo) ReturnBook(ctx context.Context, book *loans.LentBook) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	result, err := s.db.Exec(
+	result, err := s.db.ExecContext(
+		ctx,
 		"UPDATE lent_books SET returned = TRUE, returned_at = ? WHERE id = ? AND returned = FALSE",
 		book.ReturnedAt, book.ID,
 	)
@@ -197,11 +204,12 @@ func (s *sqliteRepo) ReturnBook(book *loans.LentBook) error {
 	return nil
 }
 
-func (s *sqliteRepo) FindLoansOf(userID string, bookID string) ([]loans.LentBook, error) {
+func (s *sqliteRepo) FindLoansOf(ctx context.Context, userID string, bookID string) ([]loans.LentBook, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	rows, err := s.db.Query(
+	rows, err := s.db.QueryContext(
+		ctx,
 		"SELECT * FROM lent_books WHERE (? OR user_id = ?) AND (? OR book_id = ?)",
 		userID == "", userID, bookID == "", bookID,
 	)

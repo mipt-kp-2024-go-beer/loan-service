@@ -25,9 +25,9 @@ type implConn struct {
 	client http.Client
 }
 
-func (c *implConn) LookupBook(ID string) (*Book, error) {
+func (c *implConn) LookupBook(ctx context.Context, ID string) (*Book, error) {
 	request, err := http.NewRequestWithContext(
-		context.Background(),
+		ctx,
 		http.MethodGet,
 		fmt.Sprintf("%s/api/v1/books/%s", c.url, url.PathEscape(ID)),
 		nil,

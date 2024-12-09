@@ -1,5 +1,7 @@
 package books
 
+import "context"
+
 // Book stores the information about a book
 type Book struct {
 	ID          string
@@ -11,5 +13,5 @@ type Book struct {
 
 // Connection is the interface for the private API of the book microservice
 type Connection interface {
-	LookupBook(bookID string) (*Book, error)
+	LookupBook(ctx context.Context, bookID string) (*Book, error)
 }

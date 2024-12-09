@@ -1,6 +1,7 @@
 package loans
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,8 +26,8 @@ type implService struct {
 	returnDeadline time.Duration
 }
 
-func (s *implService) TakeBook(authToken string, userID string, bookID string) error {
-	user, err := s.users.VerifyToken(authToken)
+func (s *implService) TakeBook(ctx context.Context, authToken string, userID string, bookID string) error {
+	user, err := s.users.VerifyToken(ctx, authToken)
 	if err != nil {
 		return err
 	}
@@ -40,7 +41,7 @@ func (s *implService) TakeBook(authToken string, userID string, bookID string) e
 		return fail.ErrForbidden
 	}
 
-	book, err := s.books.LookupBook(bookID)
+	book, err := s.books.LookupBook(ctx, bookID)
 	if err != nil {
 		return err
 	}
@@ -55,12 +56,12 @@ func (s *implService) TakeBook(authToken string, userID string, bookID string) e
 		ReturnedAt:     0,
 	}
 
-	err = s.repo.TakeBook(&lentBook, book.TotalStock)
+	err = s.repo.TakeBook(ctx, &lentBook, book.TotalStock)
 	return err
 }
 
-func (s *implService) ReturnBook(authToken string, userID string, bookID string) error {
-	user, err := s.users.VerifyToken(authToken)
+func (s *implService) ReturnBook(ctx context.Context, authToken string, userID string, bookID string) error {
+	user, err := s.users.VerifyToken(ctx, authToken)
 	if err != nil {
 		return err
 	}
@@ -74,7 +75,7 @@ func (s *implService) ReturnBook(authToken string, userID string, bookID string)
 		return fail.ErrForbidden
 	}
 
-	lentBooks, err := s.repo.FindLoansOf(userID, bookID)
+	lentBooks, err := s.repo.FindLoansOf(ctx, userID, bookID)
 	if err != nil {
 		return err
 	}
@@ -95,12 +96,12 @@ func (s *implService) ReturnBook(authToken string, userID string, bookID string)
 
 	// Multiple DB operations without a common lock, but if a race condition
 	// occurs (unlikely here), it will be detected as an error.
-	err = s.repo.ReturnBook(&oldestLentBook)
+	err = s.repo.ReturnBook(ctx, &oldestLentBook)
 	return err
 }
 
-func (s *implService) CountAvailableBook(authToken string, bookID string) (uint, error) {
-	user, err := s.users.VerifyToken(authToken)
+func (s *implService) CountAvailableBook(ctx context.Context, authToken string, bookID string) (uint, error) {
+	user, err := s.users.VerifyToken(ctx, authToken)
 	if err != nil {
 		return 0, err
 	}
@@ -110,12 +111,12 @@ func (s *implService) CountAvailableBook(authToken string, bookID string) (uint,
 		return 0, fail.ErrForbidden
 	}
 
-	lentBooks, err := s.repo.FindLoansOf("", bookID)
+	lentBooks, err := s.repo.FindLoansOf(ctx, "", bookID)
 	if err != nil {
 		return 0, err
 	}
 
-	book, err := s.books.LookupBook(bookID)
+	book, err := s.books.LookupBook(ctx, bookID)
 	if err != nil {
 		return 0, err
 	}
@@ -130,8 +131,8 @@ func (s *implService) CountAvailableBook(authToken string, bookID string) (uint,
 	return availableBooks, nil
 }
 
-func (s *implService) ListReservations(authToken string, at time.Time) ([]LentBook, error) {
-	user, err := s.users.VerifyToken(authToken)
+func (s *implService) ListReservations(ctx context.Context, authToken string, at time.Time) ([]LentBook, error) {
+	user, err := s.users.VerifyToken(ctx, authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -141,12 +142,12 @@ func (s *implService) ListReservations(authToken string, at time.Time) ([]LentBo
 		return nil, fail.ErrForbidden
 	}
 
-	reservations, err := s.repo.FindLentBooks(at)
+	reservations, err := s.repo.FindLentBooks(ctx, at)
 	return reservations, err
 }
 
-func (s *implService) ListOverdue(authToken string, at time.Time) ([]LentBook, error) {
-	user, err := s.users.VerifyToken(authToken)
+func (s *implService) ListOverdue(ctx context.Context, authToken string, at time.Time) ([]LentBook, error) {
+	user, err := s.users.VerifyToken(ctx, authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -156,12 +157,12 @@ func (s *implService) ListOverdue(authToken string, at time.Time) ([]LentBook, e
 		return nil, fail.ErrForbidden
 	}
 
-	overdue, err := s.repo.FindOverdueBooks(at)
+	overdue, err := s.repo.FindOverdueBooks(ctx, at)
 	return overdue, err
 }
 
-func (s *implService) GetUserLoans(userID string) (uint, error) {
-	loans, err := s.repo.FindLoansOf(userID, "")
+func (s *implService) GetUserLoans(ctx context.Context, userID string) (uint, error) {
+	loans, err := s.repo.FindLoansOf(ctx, userID, "")
 	if err != nil {
 		return 0, err
 	}

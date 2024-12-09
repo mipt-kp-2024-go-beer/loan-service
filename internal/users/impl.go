@@ -26,8 +26,8 @@ type implConn struct {
 	client http.Client
 }
 
-func (c *implConn) VerifyToken(authToken string) (*User, error) {
-	responseID, err := c.makeRequest("/user/id", authToken)
+func (c *implConn) VerifyToken(ctx context.Context, authToken string) (*User, error) {
+	responseID, err := c.makeRequest(ctx, "/user/id", authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (c *implConn) VerifyToken(authToken string) (*User, error) {
 		return nil, err
 	}
 
-	responsePermissions, err := c.makeRequest("/user/permissions", authToken)
+	responsePermissions, err := c.makeRequest(ctx, "/user/permissions", authToken)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (c *implConn) VerifyToken(authToken string) (*User, error) {
 	}, nil
 }
 
-func (c *implConn) makeRequest(endpoint string, authToken string) (*http.Response, error) {
+func (c *implConn) makeRequest(ctx context.Context, endpoint string, authToken string) (*http.Response, error) {
 	packedToken, err := json.Marshal(struct {
 		Token string `json:"token"`
 	}{
@@ -82,7 +82,7 @@ func (c *implConn) makeRequest(endpoint string, authToken string) (*http.Respons
 	}
 
 	request, err := http.NewRequestWithContext(
-		context.Background(),
+		ctx,
 		http.MethodPost,
 		fmt.Sprintf("%s%s", c.url, endpoint),
 		bytes.NewReader(packedToken),
