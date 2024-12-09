@@ -144,20 +144,7 @@ func (m *memoryRepo) FindLoansOf(userID string, bookID string) ([]loans.LentBook
 
 	result := make([]loans.LentBook, 0)
 	for _, book := range m.lentBooks {
-		if book.UserID == userID && book.BookID == bookID {
-			result = append(result, book)
-		}
-	}
-	return result, nil
-}
-
-func (m *memoryRepo) FindLoansOfBook(bookID string) ([]loans.LentBook, error) {
-	m.mutex.RLock()
-	defer m.mutex.RUnlock()
-
-	result := make([]loans.LentBook, 0)
-	for _, book := range m.lentBooks {
-		if book.BookID == bookID {
+		if (userID == "" || book.UserID == userID) && (bookID == "" || book.BookID == bookID) {
 			result = append(result, book)
 		}
 	}

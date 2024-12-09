@@ -29,7 +29,7 @@
 
 # loan-service
 ## Internal API (only for other microservices)
-...
+- User loan status: takes user id, returns whether the user has any unreturned books.
 
 ## Public API (may require auth)
 - Book take (requires permission): takes book id (and optional user id if not for self).

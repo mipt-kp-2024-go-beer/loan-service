@@ -110,7 +110,7 @@ func (s *implService) CountAvailableBook(authToken string, bookID string) (uint,
 		return 0, fail.ErrForbidden
 	}
 
-	lentBooks, err := s.repo.FindLoansOfBook(bookID)
+	lentBooks, err := s.repo.FindLoansOf("", bookID)
 	if err != nil {
 		return 0, err
 	}
@@ -158,4 +158,19 @@ func (s *implService) ListOverdue(authToken string, at time.Time) ([]LentBook, e
 
 	overdue, err := s.repo.FindOverdueBooks(at)
 	return overdue, err
+}
+
+func (s *implService) GetUserLoans(userID string) (uint, error) {
+	loans, err := s.repo.FindLoansOf(userID, "")
+	if err != nil {
+		return 0, err
+	}
+
+	result := uint(0)
+	for _, loan := range loans {
+		if !loan.Returned {
+			result += 1
+		}
+	}
+	return result, nil
 }

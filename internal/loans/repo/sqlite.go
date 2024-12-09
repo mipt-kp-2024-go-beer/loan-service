@@ -32,7 +32,3 @@ func (s *sqliteRepo) ReturnBook(book loans.LentBook) error {
 func (s *sqliteRepo) FindLoansOf(userID string, bookID string) ([]loans.LentBook, error) {
 	return nil, nil
 }
-
-func (s *sqliteRepo) FindLoansOfBook(bookID string) ([]loans.LentBook, error) {
-	return nil, nil
-}

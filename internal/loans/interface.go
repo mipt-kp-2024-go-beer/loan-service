@@ -5,19 +5,19 @@ import "time"
 // LentBook stores the information about a book being lent to a user
 type LentBook struct {
 	// ID is the UUID of the operation
-	ID string
+	ID string `json:"id"`
 	// UserID is the UUID of the user having taken the book
-	UserID string
+	UserID string `json:"user_id"`
 	// BookID is the UUID of the book being lent
-	BookID string
+	BookID string `json:"book_id"`
 	// TakenAt is the timestamp (UTC) when the book was taken
-	TakenAt uint64
+	TakenAt uint64 `json:"taken_at"`
 	// ReturnDeadline is the timestamp (UTC) when the book should be returned
-	ReturnDeadline uint64
+	ReturnDeadline uint64 `json:"return_deadline"`
 	// Returned is true if the book is already returned
-	Returned bool
+	Returned bool `json:"returned"`
 	// ReturnedAt is the timestamp (UTC) when the book was returned, if it was already
-	ReturnedAt uint64
+	ReturnedAt uint64 `json:"returned_at"`
 }
 
 // Service is the interface for the business logic module of this microservice
@@ -44,6 +44,9 @@ type Service interface {
 	// the given time (now by default), if the user has permission to do so.
 	ListOverdue(authToken string, at time.Time) ([]LentBook, error)
 
+	// GetUserLoans returns how many unreturned lent books a particular user has at the moment
+	GetUserLoans(userID string) (uint, error)
+
 	// TODO: Some statistics? Clean up database?
 }
 
@@ -63,9 +66,7 @@ type Repo interface {
 	// book's fields must be set as if it was already returned
 	ReturnBook(book LentBook) error
 
-	// FindLoansOf finds all loans of a particular book by a particular user
+	// FindLoansOf finds all loans of a particular book by a particular user.
+	// If either of (userID, bookID) is empty, that criterion is ignored
 	FindLoansOf(userID string, bookID string) ([]LentBook, error)
-
-	// FindLoansOfBook finds all loans of a particular book
-	FindLoansOfBook(bookID string) ([]LentBook, error)
 }
