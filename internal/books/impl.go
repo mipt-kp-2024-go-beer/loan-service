@@ -46,7 +46,7 @@ func (c *implConn) LookupBook(ID string) (Book, error) {
 		body, _ := io.ReadAll(response.Body)
 		return Book{}, fmt.Errorf(
 			"%w: %d %s %q",
-			fail.ErrUserService,
+			fail.ErrBookService,
 			response.StatusCode,
 			response.Status,
 			string(body),
