@@ -25,7 +25,7 @@ type implConn struct {
 	client http.Client
 }
 
-func (c *implConn) LookupBook(ID string) (Book, error) {
+func (c *implConn) LookupBook(ID string) (*Book, error) {
 	request, err := http.NewRequestWithContext(
 		context.Background(),
 		http.MethodGet,
@@ -33,18 +33,18 @@ func (c *implConn) LookupBook(ID string) (Book, error) {
 		nil,
 	)
 	if err != nil {
-		return Book{}, err
+		return nil, err
 	}
 
 	response, err := c.client.Do(request)
 	if err != nil {
-		return Book{}, err
+		return nil, err
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(response.Body)
-		return Book{}, fmt.Errorf(
+		return nil, fmt.Errorf(
 			"%w: %d %s %q",
 			fail.ErrBookService,
 			response.StatusCode,
@@ -61,10 +61,10 @@ func (c *implConn) LookupBook(ID string) (Book, error) {
 	}
 	err = json.NewDecoder(response.Body).Decode(&result)
 	if err != nil {
-		return Book{}, err
+		return nil, err
 	}
 
-	return Book{
+	return &Book{
 		ID:          result.ID,
 		Title:       result.Title,
 		Author:      result.Author,

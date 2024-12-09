@@ -90,7 +90,7 @@ func (m *memoryRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
 	return result, nil
 }
 
-func (m *memoryRepo) TakeBook(book loans.LentBook, totalStock uint) error {
+func (m *memoryRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -110,12 +110,12 @@ func (m *memoryRepo) TakeBook(book loans.LentBook, totalStock uint) error {
 		return fail.ErrNoStock
 	}
 
-	m.lentBooks[book.ID] = book
+	m.lentBooks[book.ID] = *book
 
 	return nil
 }
 
-func (m *memoryRepo) ReturnBook(book loans.LentBook) error {
+func (m *memoryRepo) ReturnBook(book *loans.LentBook) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -133,7 +133,7 @@ func (m *memoryRepo) ReturnBook(book loans.LentBook) error {
 		return fail.ErrCollision
 	}
 
-	m.lentBooks[book.ID] = book
+	m.lentBooks[book.ID] = *book
 
 	return nil
 }

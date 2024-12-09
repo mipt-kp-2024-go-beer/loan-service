@@ -132,7 +132,7 @@ func (s *sqliteRepo) FindOverdueBooks(at time.Time) ([]loans.LentBook, error) {
 	return result, err
 }
 
-func (s *sqliteRepo) TakeBook(book loans.LentBook, totalStock uint) error {
+func (s *sqliteRepo) TakeBook(book *loans.LentBook, totalStock uint) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -175,7 +175,7 @@ func (s *sqliteRepo) TakeBook(book loans.LentBook, totalStock uint) error {
 	return nil
 }
 
-func (s *sqliteRepo) ReturnBook(book loans.LentBook) error {
+func (s *sqliteRepo) ReturnBook(book *loans.LentBook) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

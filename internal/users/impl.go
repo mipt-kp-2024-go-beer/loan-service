@@ -26,10 +26,10 @@ type implConn struct {
 	client http.Client
 }
 
-func (c *implConn) VerifyToken(authToken string) (User, error) {
+func (c *implConn) VerifyToken(authToken string) (*User, error) {
 	responseID, err := c.makeRequest("/user/id", authToken)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 	defer responseID.Body.Close()
 
@@ -38,12 +38,12 @@ func (c *implConn) VerifyToken(authToken string) (User, error) {
 	}
 	err = json.NewDecoder(responseID.Body).Decode(&resultID)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 
 	responsePermissions, err := c.makeRequest("/user/permissions", authToken)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 	defer responsePermissions.Body.Close()
 
@@ -53,15 +53,15 @@ func (c *implConn) VerifyToken(authToken string) (User, error) {
 	}
 	err = json.NewDecoder(responsePermissions.Body).Decode(&resultPermissions)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 
 	permissions, err := strconv.ParseUint(resultPermissions.Permissions, 10, 64)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 
-	return User{
+	return &User{
 		ID: resultID.ID,
 		// TODO: Populate if the user service starts providing these
 		Login:       "",

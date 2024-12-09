@@ -60,11 +60,11 @@ type Repo interface {
 
 	// TakeBook tests that the book isn't out of stock and registers it as taken.
 	// book's fields must be set as if it was already taken
-	TakeBook(book LentBook, totalStock uint) error
+	TakeBook(book *LentBook, totalStock uint) error
 
 	// ReturnBook tests that the book is taken and registers it as returned.
 	// book's fields must be set as if it was already returned
-	ReturnBook(book LentBook) error
+	ReturnBook(book *LentBook) error
 
 	// FindLoansOf finds all loans of a particular book by a particular user.
 	// If either of (userID, bookID) is empty, that criterion is ignored

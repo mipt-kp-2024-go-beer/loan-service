@@ -11,5 +11,5 @@ type Book struct {
 
 // Connection is the interface for the private API of the book microservice
 type Connection interface {
-	LookupBook(bookID string) (Book, error)
+	LookupBook(bookID string) (*Book, error)
 }

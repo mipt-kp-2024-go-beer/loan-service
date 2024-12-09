@@ -55,7 +55,7 @@ func (s *implService) TakeBook(authToken string, userID string, bookID string) e
 		ReturnedAt:     0,
 	}
 
-	err = s.repo.TakeBook(lentBook, book.TotalStock)
+	err = s.repo.TakeBook(&lentBook, book.TotalStock)
 	return err
 }
 
@@ -95,7 +95,7 @@ func (s *implService) ReturnBook(authToken string, userID string, bookID string)
 
 	// Multiple DB operations without a common lock, but if a race condition
 	// occurs (unlikely here), it will be detected as an error.
-	err = s.repo.ReturnBook(oldestLentBook)
+	err = s.repo.ReturnBook(&oldestLentBook)
 	return err
 }
 
