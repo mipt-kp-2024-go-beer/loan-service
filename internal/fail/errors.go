@@ -7,12 +7,13 @@ import (
 )
 
 var (
-	ErrNotFound      = new("object not found")
-	ErrCollision     = new("object already exists")
-	ErrForbidden     = new("insufficient permissions")
-	ErrNoStock       = new("insufficient stock")
-	ErrMissingParams = new("missing required parameters")
-	ErrInvalidDSN    = new("unrecognized data source name")
+	ErrNotFound         = new("object not found")
+	ErrCollision        = new("object already exists")
+	ErrForbidden        = new("insufficient permissions")
+	ErrNoStock          = new("insufficient stock")
+	ErrMissingParams    = new("missing required parameters")
+	ErrInvalidDSN       = new("unrecognized data source name")
+	ErrMalformedStorage = new("malformed storage")
 )
 
 func new(desc string) error {

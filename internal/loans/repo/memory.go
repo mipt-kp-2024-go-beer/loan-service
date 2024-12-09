@@ -8,7 +8,7 @@ import (
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/loans"
 )
 
-func NewMemoryRepo() loans.Repo {
+func NewMemoryRepo(dsn string) loans.Repo {
 	return &memoryRepo{
 		mutex:     sync.RWMutex{},
 		lentBooks: make(map[string]loans.LentBook),
