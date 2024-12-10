@@ -55,6 +55,8 @@ func TestService_TakeBook(t *testing.T) {
 	service := loans.NewService(repo, userSvc, bookSvc, bookReturnDeadline)
 
 	// TODO: Test serivce.TakeBook
+	_ = ctx
+	_ = service
 }
 
 func TestService_ReturnBook(t *testing.T) {
@@ -70,6 +72,8 @@ func TestService_ReturnBook(t *testing.T) {
 	service := loans.NewService(repo, userSvc, bookSvc, bookReturnDeadline)
 
 	// TODO: Test serivce.ReturnBook
+	_ = ctx
+	_ = service
 }
 
 func TestService_CountAvailableBook(t *testing.T) {
@@ -85,6 +89,8 @@ func TestService_CountAvailableBook(t *testing.T) {
 	service := loans.NewService(repo, userSvc, bookSvc, bookReturnDeadline)
 
 	// TODO: Test serivce.CountAvailableBook
+	_ = ctx
+	_ = service
 }
 
 func TestService_ListReservations(t *testing.T) {
@@ -100,6 +106,8 @@ func TestService_ListReservations(t *testing.T) {
 	service := loans.NewService(repo, userSvc, bookSvc, bookReturnDeadline)
 
 	// TODO: Test serivce.ListReservations
+	_ = ctx
+	_ = service
 }
 
 func TestService_ListOverdue(t *testing.T) {
@@ -115,6 +123,8 @@ func TestService_ListOverdue(t *testing.T) {
 	service := loans.NewService(repo, userSvc, bookSvc, bookReturnDeadline)
 
 	// TODO: Test serivce.ListOverdue
+	_ = ctx
+	_ = service
 }
 
 func TestService_GetUserLoans(t *testing.T) {
@@ -130,4 +140,6 @@ func TestService_GetUserLoans(t *testing.T) {
 	service := loans.NewService(repo, userSvc, bookSvc, bookReturnDeadline)
 
 	// TODO: Test serivce.GetUserLoans
+	_ = ctx
+	_ = service
 }
