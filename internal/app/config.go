@@ -1,6 +1,10 @@
 package app
 
-import "time"
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
 
 // Config stores the configuration of the microservice
 type Config struct {
@@ -16,4 +20,16 @@ type Config struct {
 	DSN string `json:"dsn"`
 	// BookReturnDeadline is the time span that a user has to return a book after it has been taken
 	BookReturnDeadline time.Duration `json:"book_return_deadline"`
+}
+
+func NewConfig(path string) (*Config, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	result := &Config{}
+	err = json.NewDecoder(file).Decode(result)
+	return result, err
 }

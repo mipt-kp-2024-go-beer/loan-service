@@ -149,7 +149,7 @@ func (s *sqliteRepo) TakeBook(ctx context.Context, book *loans.LentBook, totalSt
 	var lentStock uint
 	err = tx.QueryRowContext(
 		ctx,
-		"SELECT count(*) FROM books WHERE id = ?",
+		"SELECT count(*) FROM lent_books WHERE book_id = ? AND NOT returned",
 		book.BookID,
 	).Scan(&lentStock)
 	if err != nil {

@@ -23,7 +23,11 @@ func performRequest(t *testing.T, req *http.Request, useInternal bool) *httptest
 
 	rr := httptest.NewRecorder()
 
-	router.ServeHTTP(rr, req)
+	if useInternal {
+		routerInternal.ServeHTTP(rr, req)
+	} else {
+		router.ServeHTTP(rr, req)
+	}
 
 	return rr
 }
