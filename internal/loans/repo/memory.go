@@ -30,6 +30,7 @@ type TestMemoryRepo interface {
 	UpdateBook(ctx context.Context, book loans.LentBook) error
 	InsertBook(ctx context.Context, book loans.LentBook) error
 	RawData() map[string]loans.LentBook
+	ResetRawData(map[string]loans.LentBook)
 }
 
 func (m *memoryRepo) LookupBook(ctx context.Context, ID string) (loans.LentBook, error) {
@@ -70,6 +71,13 @@ func (m *memoryRepo) RawData() map[string]loans.LentBook {
 	defer m.mutex.RUnlock()
 
 	return maps.Clone(m.lentBooks)
+}
+
+func (m *memoryRepo) ResetRawData(data map[string]loans.LentBook) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	m.lentBooks = maps.Clone(data)
 }
 
 func (m *memoryRepo) FindLentBooks(ctx context.Context, at time.Time) ([]loans.LentBook, error) {
@@ -116,7 +124,7 @@ func (m *memoryRepo) TakeBook(ctx context.Context, book *loans.LentBook, totalSt
 		}
 	}
 
-	if remainingStock < 0 {
+	if remainingStock <= 0 {
 		return fail.ErrNoStock
 	}
 

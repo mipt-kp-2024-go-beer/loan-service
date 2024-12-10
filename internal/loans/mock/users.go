@@ -8,7 +8,7 @@ import (
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/users"
 )
 
-func NewUsersConn(url string) users.Connection {
+func NewUsersConn() users.Connection {
 	return &implUsersConn{}
 }
 
@@ -17,9 +17,9 @@ type implUsersConn struct {
 
 func (*implUsersConn) VerifyToken(ctx context.Context, authToken string) (*users.User, error) {
 	switch {
-	case authToken == "invalid":
+	case authToken == "token-invalid":
 		return nil, fmt.Errorf("%w: pretend invalid token", fail.ErrUserService)
-	case authToken == "regular-user":
+	case authToken == "token-regular-user":
 		return &users.User{
 			ID:      "vasya-pupkin",
 			Login:   "",
@@ -31,7 +31,7 @@ func (*implUsersConn) VerifyToken(ctx context.Context, authToken string) (*users
 					users.PermQueryTotalStock,
 			),
 		}, nil
-	case authToken == "librarian":
+	case authToken == "token-librarian":
 		return &users.User{
 			ID:      "yuuko-shirakawa",
 			Login:   "",

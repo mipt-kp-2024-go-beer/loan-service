@@ -36,7 +36,7 @@ func (s *implService) TakeBook(ctx context.Context, authToken string, userID str
 		userID = user.ID
 	}
 
-	allowed := user.HasPerm(users.PermLoanBooks)
+	allowed := user.HasPerm(users.PermLoanBooks) || user.ID == userID
 	if !allowed {
 		return fail.ErrForbidden
 	}
@@ -70,7 +70,7 @@ func (s *implService) ReturnBook(ctx context.Context, authToken string, userID s
 		userID = user.ID
 	}
 
-	allowed := user.HasPerm(users.PermLoanBooks)
+	allowed := user.HasPerm(users.PermLoanBooks) || user.ID == userID
 	if !allowed {
 		return fail.ErrForbidden
 	}
@@ -86,9 +86,13 @@ func (s *implService) ReturnBook(ctx context.Context, authToken string, userID s
 
 	oldestLentBook := lentBooks[0]
 	for _, book := range lentBooks[1:] {
-		if !book.Returned && book.ReturnDeadline < oldestLentBook.ReturnDeadline {
+		if !book.Returned && (oldestLentBook.Returned || book.ReturnDeadline < oldestLentBook.ReturnDeadline) {
 			oldestLentBook = book
 		}
+	}
+
+	if oldestLentBook.Returned {
+		return fail.ErrNotFound
 	}
 
 	oldestLentBook.Returned = true
