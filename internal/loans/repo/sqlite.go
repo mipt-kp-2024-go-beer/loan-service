@@ -14,7 +14,7 @@ import (
 )
 
 func NewSqliteRepo(dsn string) (loans.Repo, error) {
-	dsn, ok := strings.CutPrefix(dsn, "sqlite:")
+	dsn, ok := strings.CutPrefix(dsn, "sqlite://")
 	if !ok {
 		return nil, fail.ErrInvalidDSN
 	}

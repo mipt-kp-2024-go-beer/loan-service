@@ -62,9 +62,9 @@ func (a *App) Setup(ctx context.Context) error {
 	dsn := a.config.DSN
 	var store loans.Repo
 	switch {
-	case strings.HasPrefix(dsn, "memory:"):
+	case strings.HasPrefix(dsn, "memory://"):
 		store = repo.NewMemoryRepo(dsn)
-	case strings.HasPrefix(dsn, "sqlite:"):
+	case strings.HasPrefix(dsn, "sqlite://"):
 		var err error
 		store, err = repo.NewSqliteRepo(dsn)
 		if err != nil {

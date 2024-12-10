@@ -8,14 +8,14 @@ import (
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/fail"
 )
 
-func NewBooksConn(url string) books.Connection {
-	return &implBooksConn{}
+func NewConn() books.Connection {
+	return &implConn{}
 }
 
-type implBooksConn struct {
+type implConn struct {
 }
 
-func (*implBooksConn) LookupBook(ctx context.Context, ID string) (*books.Book, error) {
+func (*implConn) LookupBook(ctx context.Context, ID string) (*books.Book, error) {
 	switch ID {
 	case "bad-id":
 		return nil, fmt.Errorf("%w: pretend missing book", fail.ErrUserService)

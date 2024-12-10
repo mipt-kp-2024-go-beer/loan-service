@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"maps"
 	"sync"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/loans"
 )
 
-func NewMemoryRepo(dsn string) loans.Repo {
+func NewMemoryRepo(dsn string) TestMemoryRepo {
 	return &memoryRepo{
 		mutex:     sync.RWMutex{},
 		lentBooks: make(map[string]loans.LentBook),
@@ -28,6 +29,7 @@ type TestMemoryRepo interface {
 	LookupBook(ctx context.Context, ID string) (loans.LentBook, error)
 	UpdateBook(ctx context.Context, book loans.LentBook) error
 	InsertBook(ctx context.Context, book loans.LentBook) error
+	RawData() map[string]loans.LentBook
 }
 
 func (m *memoryRepo) LookupBook(ctx context.Context, ID string) (loans.LentBook, error) {
@@ -61,6 +63,13 @@ func (m *memoryRepo) InsertBook(ctx context.Context, book loans.LentBook) error 
 	}
 	m.lentBooks[book.ID] = book
 	return nil
+}
+
+func (m *memoryRepo) RawData() map[string]loans.LentBook {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	return maps.Clone(m.lentBooks)
 }
 
 func (m *memoryRepo) FindLentBooks(ctx context.Context, at time.Time) ([]loans.LentBook, error) {
