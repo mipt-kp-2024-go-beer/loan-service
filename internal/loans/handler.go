@@ -127,14 +127,20 @@ func (h *Handler) getReserved(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	authToken := r.Form.Get("auth")
-	atTime, err := strconv.ParseInt(r.Form.Get("atTime"), 10, 64)
-	if err != nil {
-		fail.WriteError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
-		return
-	}
 	if authToken == "" {
 		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth"))
 		return
+	}
+	atTimeStr := r.Form.Get("atTime")
+	var atTime int64
+	if atTimeStr == "" {
+		atTime = time.Now().Unix()
+	} else {
+		atTime, err = strconv.ParseInt(atTimeStr, 10, 64)
+		if err != nil {
+			fail.WriteError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
+			return
+		}
 	}
 
 	reserved, err := h.service.ListReservations(r.Context(), authToken, time.Unix(atTime, 0))
@@ -158,14 +164,20 @@ func (h *Handler) getOverdue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	authToken := r.Form.Get("auth")
-	atTime, err := strconv.ParseInt(r.Form.Get("atTime"), 10, 64)
-	if err != nil {
-		fail.WriteError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
-		return
-	}
 	if authToken == "" {
 		fail.WriteError(w, fmt.Errorf("%w: %q", fail.ErrMissingParams, "auth"))
 		return
+	}
+	atTimeStr := r.Form.Get("atTime")
+	var atTime int64
+	if atTimeStr == "" {
+		atTime = time.Now().Unix()
+	} else {
+		atTime, err = strconv.ParseInt(atTimeStr, 10, 64)
+		if err != nil {
+			fail.WriteError(w, fmt.Errorf("%w: failed to parse atTime: %w", fail.ErrMissingParams, err))
+			return
+		}
 	}
 
 	overdue, err := h.service.ListOverdue(r.Context(), authToken, time.Unix(atTime, 0))

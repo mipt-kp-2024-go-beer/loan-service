@@ -30,6 +30,8 @@ func HTTPErrorCode(err error) int {
 		return http.StatusConflict
 	case errors.Is(err, ErrForbidden):
 		return http.StatusForbidden
+	case errors.Is(err, ErrNoStock):
+		return http.StatusNotFound
 	case errors.Is(err, ErrMissingParams):
 		return http.StatusBadRequest
 	default:
