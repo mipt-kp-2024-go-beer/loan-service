@@ -45,10 +45,10 @@ func makeServer(address string) (*chi.Mux, *http.Server) {
 	server := &http.Server{
 		Addr:              address,
 		Handler:           router,
-		ReadTimeout:       10,
-		ReadHeaderTimeout: 10,
-		WriteTimeout:      10,
-		IdleTimeout:       10,
+		ReadTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       30 * time.Second,
 		MaxHeaderBytes:    0x10000,
 	}
 	return router, server
@@ -91,7 +91,14 @@ func (a *App) Start() error {
 
 	errs.Go(func() error {
 		if err := a.http.ListenAndServe(); err != nil {
-			return fmt.Errorf("listen and serve error: %w", err)
+			return fmt.Errorf("listen and serve error (public api server): %w", err)
+		}
+		return nil
+	})
+
+	errs.Go(func() error {
+		if err := a.httpInternal.ListenAndServe(); err != nil {
+			return fmt.Errorf("listen and serve error (internal api server): %w", err)
 		}
 		return nil
 	})

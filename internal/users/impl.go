@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/fail"
 )
@@ -16,7 +17,7 @@ func NewConn(url string) Connection {
 	return &implConn{
 		url: url,
 		client: http.Client{
-			Timeout: 10,
+			Timeout: 30 * time.Second,
 		},
 	}
 }
@@ -84,7 +85,7 @@ func (c *implConn) makeRequest(ctx context.Context, endpoint string, authToken s
 	request, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		fmt.Sprintf("%s%s", c.url, endpoint),
+		fmt.Sprintf("http://%s%s", c.url, endpoint),
 		bytes.NewReader(packedToken),
 	)
 	if err != nil {

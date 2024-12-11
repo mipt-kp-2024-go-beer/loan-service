@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/fail"
 )
@@ -16,7 +17,7 @@ func NewConn(url string) Connection {
 	return &implConn{
 		url: url,
 		client: http.Client{
-			Timeout: 10,
+			Timeout: 10 * time.Second,
 		},
 	}
 }
@@ -30,7 +31,7 @@ func (c *implConn) LookupBook(ctx context.Context, ID string) (*Book, error) {
 	request, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		fmt.Sprintf("%s/api/v1/books/%s", c.url, url.PathEscape(ID)),
+		fmt.Sprintf("http://%s/api/v1/books/%s", c.url, url.PathEscape(ID)),
 		nil,
 	)
 	if err != nil {

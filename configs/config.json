@@ -4,5 +4,5 @@
     "book_service_url": "localhost:8082",
     "user_service_url": "localhost:8083",
     "dsn": "memory://",
-    "book_return_deadline": 3600000000000
+    "book_return_deadline": 1209600000000000
 }
