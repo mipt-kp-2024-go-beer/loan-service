@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/mipt-kp-2024-go-beer/loan-service/internal/fail"
 )
@@ -58,10 +59,16 @@ func (c *implConn) LookupBook(ctx context.Context, ID string) (*Book, error) {
 		Title       string `json:"title"`
 		Author      string `json:"author"`
 		Description string `json:"description"`
+		Stock       string `json:"stock"`
 	}
 	err = json.NewDecoder(response.Body).Decode(&result)
 	if err != nil {
 		return nil, err
+	}
+
+	stock, err := strconv.ParseUint(result.Stock, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse stock: %w", fail.ErrBookService, err)
 	}
 
 	return &Book{
@@ -69,6 +76,6 @@ func (c *implConn) LookupBook(ctx context.Context, ID string) (*Book, error) {
 		Title:       result.Title,
 		Author:      result.Author,
 		Description: result.Description,
-		TotalStock:  1, // TODO: Change when the book service implements this
+		TotalStock:  uint(stock),
 	}, nil
 }
